@@ -40,18 +40,25 @@ Halle[A]luja! Halle[E/G#]luja!
         <div class="instruction-header">
           <span>Anweisung</span>
         </div>
-        <div class="instruction-input-row">
-          <textarea id="instruction" rows="2" placeholder='z.B. "Ändere im Chorus alle A zu G" oder "Transponiere alles einen Halbton hoch"'></textarea>
-          <button id="applyBtn" class="btn-primary">Anwenden</button>
-        </div>
+        <textarea id="instruction" rows="2" placeholder='z.B. "Ändere im Chorus alle A zu G" oder "Transponiere alles einen Halbton hoch"'></textarea>
+        <button id="applyBtn" class="btn-primary">Anwenden</button>
         <div id="status" class="status hidden"></div>
-        <div id="historyPanel" class="history-panel hidden">
-          <div class="history-header">
-            <span>Verlauf</span>
-            <button id="clearHistory" class="btn-small">Leeren</button>
-          </div>
-          <ul id="historyList"></ul>
+      </div>
+
+      <div id="previewContainer" class="preview-container hidden">
+        <div class="preview-header">
+          <span>Vorschau</span>
+          <button id="copyBtn" class="btn-small">Kopieren</button>
         </div>
+        <div id="previewContent" class="preview-content"></div>
+      </div>
+
+      <div id="historyPanel" class="history-panel hidden">
+        <div class="history-header">
+          <span>Verlauf</span>
+          <button id="clearHistory" class="btn-small">Leeren</button>
+        </div>
+        <ul id="historyList"></ul>
       </div>
     </main>
   </div>
