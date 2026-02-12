@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Song Sheet Editor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Song Sheet Editor</h1>
+      <p class="subtitle">Füge dein Song Sheet ein und lass Akkorde per AI ändern</p>
+    </header>
+
+    <div class="api-key-bar">
+      <label for="apiKey">Anthropic API Key:</label>
+      <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+      <button id="toggleKey" class="btn-icon" title="Key anzeigen/verbergen">👁</button>
+    </div>
+
+    <main>
+      <div class="editor-container">
+        <div class="editor-header">
+          <span>Song Sheet</span>
+          <div class="editor-actions">
+            <button id="undoBtn" class="btn-small" disabled title="Letzte Änderung rückgängig">Undo</button>
+            <button id="clearBtn" class="btn-small">Leeren</button>
+          </div>
+        </div>
+        <textarea id="songSheet" spellcheck="false" placeholder="Song Sheet hier einfügen...
+
+Beispiel:
+{c: Verse}
+Halle[A]luja! Halle[E/G#]luja!
+|. [F#m]Du großer [F#m/E]Gott Du re[D]gierst"></textarea>
+      </div>
+
+      <div class="instruction-container">
+        <div class="instruction-header">
+          <span>Anweisung</span>
+        </div>
+        <div class="instruction-input-row">
+          <textarea id="instruction" rows="2" placeholder='z.B. "Ändere im Chorus alle A zu G" oder "Transponiere alles einen Halbton hoch"'></textarea>
+          <button id="applyBtn" class="btn-primary">Anwenden</button>
+        </div>
+        <div id="status" class="status hidden"></div>
+        <div id="historyPanel" class="history-panel hidden">
+          <div class="history-header">
+            <span>Verlauf</span>
+            <button id="clearHistory" class="btn-small">Leeren</button>
+          </div>
+          <ul id="historyList"></ul>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
