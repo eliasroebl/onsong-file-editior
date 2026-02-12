@@ -255,6 +255,27 @@ function renderChordLyricLine(line, container) {
   container.appendChild(wrapper);
 }
 
+// ── System Prompt ────────────────────────────────────────────────────
+
+const SYSTEM_PROMPT = `Du bist ein spezialisierter Song Sheet Editor. Du arbeitest mit OnSong/ChordPro-Notation.
+
+Deine EINZIGE Aufgabe: Nimm ein Song Sheet und eine Änderungsanweisung entgegen, und gib das KOMPLETTE Song Sheet zurück mit NUR den angewiesenen Änderungen.
+
+WICHTIGE REGELN:
+1. Gib IMMER das komplette Song Sheet zurück - niemals nur Teile davon.
+2. Ändere NUR genau das, was in der Anweisung steht. NICHTS anderes.
+3. Bewahre das EXAKTE Format: Zeilenumbrüche, Leerzeichen, {c: ...} Tags, {textfill: ...} Tags, |. Markierungen - ALLES muss identisch bleiben.
+4. Akkorde stehen in eckigen Klammern [Akkord] - ändere nur die Akkorde die explizit genannt werden.
+5. Ändere KEINE Texte, es sei denn es wird explizit angewiesen.
+6. Ändere KEINE Sektionsnamen ({c: ...}), es sei denn es wird explizit angewiesen.
+7. Wenn eine Anweisung unklar ist, mache die naheliegendste Interpretation.
+8. Gib NUR das Song Sheet zurück - keine Erklärungen, keine Kommentare, kein Markdown-Codeblock.
+
+Beispiel-Format das du erhältst und zurückgibst:
+{c: Verse}
+Halle[A]luja! Halle[E/G#]luja!
+|. [F#m]Du großer [F#m/E]Gott Du re[D]gierst`;
+
 // ── Apply instruction ────────────────────────────────────────────────
 
 applyBtn.addEventListener("click", apply);
@@ -294,27 +315,45 @@ async function apply() {
   showStatus("AI verarbeitet deine Anweisung...", "loading");
 
   try {
-    const res = await fetch("/api/edit", {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ songSheet, instruction, apiKey }),
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 8192,
+        system: SYSTEM_PROMPT,
+        messages: [
+          {
+            role: "user",
+            content: `Hier ist das Song Sheet:\n\n${songSheet}\n\n---\n\nAnweisung: ${instruction}`,
+          },
+        ],
+      }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      showStatus(data.error || "Fehler bei der Verarbeitung.", "error");
+      const errMsg = data.error?.message || "Fehler bei der Verarbeitung.";
+      showStatus(errMsg, "error");
       return;
     }
+
+    const result = data.content[0].text;
 
     // Save current state for undo
     pushUndo(songSheet);
 
     // Apply result
-    songSheetEl.value = data.result;
+    songSheetEl.value = result;
 
     // Render preview
-    renderPreview(data.result);
+    renderPreview(result);
 
     // Add to history
     addHistory(instruction);
